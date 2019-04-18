@@ -1,1 +1,21 @@
 epoch,loss,accuracy,mode
+0, 4.85201,0.44086,training
+0, 4.79632,0.49015,validation
+1, 4.80396,0.42767,training
+1, 4.77383,0.49015,validation
+2, 4.77991,0.37870,training
+2, 4.70710,0.49015,validation
+3, 4.74143,0.31494,training
+3, 4.65894,0.49027,validation
+4, 4.74029,0.32707,training
+4, 4.61984,0.47080,validation
+5, 4.72214,0.31968,training
+5, 4.60902,0.47212,validation
+6, 4.68804,0.32487,training
+6, 4.55194,0.48928,validation
+7, 4.66292,0.35209,training
+7, 4.47173,0.47401,validation
+8, 4.61596,0.34839,training
+8, 4.41238,0.47514,validation
+9, 4.58261,0.33335,training
+9, 4.34641,0.42798,validation
