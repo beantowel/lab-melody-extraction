@@ -13,6 +13,8 @@ class ScopeMultiDNN(nn.Module):
         self.d_feature = d_feature
         self.d_hidden = d_hidden
         self.n_stage = n_stage
+        self.n_pitch = n_pitch
+        self.n_voice = n_voice
         self.device = device
 
         self.scope = 1 << n_stage
@@ -43,10 +45,10 @@ class ScopeMultiDNN(nn.Module):
         )
 
         self.butterflyArithm = nn.Sequential(
-            nn.Linear(d_feature * 2, d_hidden[0] * 2),
+            nn.Linear(n_pitch * 2, n_pitch * 2),
             nn.LeakyReLU(),
             nn.Dropout(dropout),
-            nn.Linear(d_hidden[0] * 2, d_feature * 2),
+            nn.Linear(n_pitch * 2, n_pitch * 2),
             nn.LeakyReLU(),
             nn.Dropout(dropout),
         )
@@ -57,15 +59,17 @@ class ScopeMultiDNN(nn.Module):
     def forward(self, feature_vec):
         # feature_vec: (nBatch, scope, d_feature)
         assert feature_vec.shape[1] == self.scope, f'{feature_vec.shape} mismatch {self.n_stage}'
-        transIn = feature_vec[:, self.permutation]
-        transOut = self.butterflyTransform(transIn)[:, self.permutation]
-        # dnnIn = (feature_vec * transOut).view(-1, self.d_feature)
-        dnnIn = transOut.view(-1, self.d_feature)
-        # dnnOut: (nBatch*scope, d_hidden[-1])
+        # dnnIn: (nBatch*scope, d_feature)
+        dnnIn = feature_vec.view(-1, self.d_feature)
         dnnOut = self.dnn(dnnIn)
         pitchLogit = self.pitchLayer(dnnOut)
         voiceLogit = self.voiceLayer(dnnOut)
-        return pitchLogit, voiceLogit
+
+        transIn = pitchLogit.view(-1, self.scope, self.n_pitch)
+        transIn = transIn[:, self.permutation]
+        tPitchLogit = self.butterflyTransform(transIn)
+        tPitchLogit = tPitchLogit[:, self.permutation].view(-1, self.n_pitch)
+        return tPitchLogit, voiceLogit
 
     def loadPretrained(self, save_data):
         checkpoint = torch.load(save_data, map_location=self.device)

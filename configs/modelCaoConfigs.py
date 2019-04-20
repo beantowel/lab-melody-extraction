@@ -8,7 +8,7 @@ NUM_PITCH = 120  # Pitch
 NUM_VOICE = 2  # Voice or not
 DROPOUT = 0.5
 # scope model params
-NUM_STAGE = 7
+NUM_STAGE = 5
 # use gpu
 DEVICE = torch.device('cuda')
 # merge params to list for checkpoint
@@ -24,7 +24,7 @@ MODEL_PARAMS = (
 
 # dataset, dataloader params
 TRAIN_RATIO = 0.9
-BATCH_SIZE = 128
+BATCH_SIZE = 512
 NUM_WORKERS = 12
 SR = 22050
 FRAME_SIZE = 2048
@@ -38,7 +38,7 @@ BIN_RESOLUTION = 120
 
 # optimizer, loss params
 WEIGHT_DECAY = 0.001  # 0.0001
-LEARNING_RATE = 0.0001
+LEARNING_RATE = 0.001 
 LOSS_RATIO = 0.5
 AUXILIARY_WEIGHT = 0.5
 
@@ -47,7 +47,7 @@ MODEL_NAME = 'scopeMultiDNN'
 SAVE_DIR = './data'
 SAVE_LOG = os.path.join(SAVE_DIR, f'{MODEL_NAME}.log')
 SAVE_DATA = os.path.join(SAVE_DIR, f'{MODEL_NAME}.pkl')
-NUM_EPOCH = 70
+NUM_EPOCH = 500 
 MAX_STEP_NUM = int(1e9)
 
 # inference params
