@@ -44,16 +44,23 @@ class ScopeMultiDNN(nn.Module):
             nn.ReLU()
         )
 
-        self.butterflyArithm = nn.Sequential(
-            nn.Linear(n_pitch * 2, n_pitch * 2),
-            nn.LeakyReLU(),
-            nn.Dropout(dropout),
-            nn.Linear(n_pitch * 2, n_pitch * 2),
-            nn.LeakyReLU(),
-            nn.Dropout(dropout),
-        )
+        self.butterflyArithm = nn.ModuleList([
+            nn.Sequential(
+                nn.Linear(d_hidden[-1] * 2, d_hidden[-1] * 2),
+                nn.LeakyReLU(),
+                nn.Dropout(dropout),
+                nn.Linear(d_hidden[-1] * 2, d_hidden[-1] * 2),
+                nn.LeakyReLU(),
+                nn.Dropout(dropout),
+            )
+            for i in range(self.n_stage)
+        ])
 
+        # init params
         self.loadPretrained(pretrained)
+        for i in range(len(self.butterflyArithm), 3):
+            linear = self.butterflyArithm[i]
+            nn.init.xavier_normal_(linear.weight)
         self.to(self.device)
 
     def forward(self, feature_vec):
@@ -62,20 +69,22 @@ class ScopeMultiDNN(nn.Module):
         # dnnIn: (nBatch*scope, d_feature)
         dnnIn = feature_vec.view(-1, self.d_feature)
         dnnOut = self.dnn(dnnIn)
-        pitchLogit = self.pitchLayer(dnnOut)
-        voiceLogit = self.voiceLayer(dnnOut)
 
-        transIn = pitchLogit.view(-1, self.scope, self.n_pitch)
+        residual = dnnOut.clone()
+        transIn = dnnOut.view(-1, self.scope, self.d_hidden[-1])
         transIn = transIn[:, self.permutation]
-        tPitchLogit = self.butterflyTransform(transIn)
-        tPitchLogit = tPitchLogit[:, self.permutation].view(-1, self.n_pitch)
-        return tPitchLogit, voiceLogit
+        transOut = self.butterflyTransform(transIn)[:, self.permutation]
+        transOut = transOut.view(-1, self.d_hidden[-1]) + residual
+
+        pitchLogit = self.pitchLayer(transOut)
+        voiceLogit = self.voiceLayer(transOut)
+        return pitchLogit, voiceLogit
 
     def loadPretrained(self, save_data):
         checkpoint = torch.load(save_data, map_location=self.device)
         model_stat_dict = checkpoint['model']
         self.load_state_dict(model_stat_dict, strict=False)
-        for module in (self.dnn, self.pitchLayer, self.voiceLayer):
+        for module in (self.dnn):
             for param in module.parameters():
                 param.requires_grad = False
 
@@ -86,7 +95,7 @@ class ScopeMultiDNN(nn.Module):
         # out: (nBatch, x * 2)
         dim1 = ax.shape[1]
         opIn = torch.stack((ax, ay), dim=-1).view(-1, dim1 * 2)
-        opOut = self.butterflyArithm(opIn)
+        opOut = self.butterflyArithm[i](opIn)
         return opOut[:, :dim1], opOut[:, dim1:]
 
     def butterflyTransform(self, a):

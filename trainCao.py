@@ -44,7 +44,7 @@ def resumeFrom(save_data, device=DEVICE):
     model_stat_dict = checkpoint['model']
     params = checkpoint['params']
     train_loader, valid_loader = checkpoint['dataloaders']
-    epoch_r = checkpoint['epoch']
+    epoch_r = checkpoint['epoch'] + 1
 
     model = ScopeMultiDNN(*params).to(device)
     model.load_state_dict(model_stat_dict)

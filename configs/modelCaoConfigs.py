@@ -24,11 +24,11 @@ MODEL_PARAMS = (
 
 # dataset, dataloader params
 TRAIN_RATIO = 0.9
-BATCH_SIZE = 512
+BATCH_SIZE = 1024
 NUM_WORKERS = 12
 SR = 22050
 FRAME_SIZE = 2048
-HOP_SIZE = 512
+HOP_SIZE = 1024
 SEG_FRAME = (FRAME_SIZE - HOP_SIZE) + HOP_SIZE * (1 << NUM_STAGE)
 SEG_HOP = SEG_FRAME // 4
 N_FFT = 2048
@@ -38,7 +38,7 @@ BIN_RESOLUTION = 120
 
 # optimizer, loss params
 WEIGHT_DECAY = 0.001  # 0.0001
-LEARNING_RATE = 0.001 
+LEARNING_RATE = 0.0001
 LOSS_RATIO = 0.5
 AUXILIARY_WEIGHT = 0.5
 
@@ -47,7 +47,7 @@ MODEL_NAME = 'scopeMultiDNN'
 SAVE_DIR = './data'
 SAVE_LOG = os.path.join(SAVE_DIR, f'{MODEL_NAME}.log')
 SAVE_DATA = os.path.join(SAVE_DIR, f'{MODEL_NAME}.pkl')
-NUM_EPOCH = 500 
+NUM_EPOCH = 200
 MAX_STEP_NUM = int(1e9)
 
 # inference params
