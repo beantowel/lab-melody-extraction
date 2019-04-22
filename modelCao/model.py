@@ -58,9 +58,10 @@ class ScopeMultiDNN(nn.Module):
 
         # init params
         self.loadPretrained(pretrained)
-        for i in range(len(self.butterflyArithm), 3):
-            linear = self.butterflyArithm[i]
-            nn.init.xavier_normal_(linear.weight)
+        for module in self.butterflyArithm:
+            for i in range(len(module), 3):
+                linear = module[i]
+                nn.init.xavier_normal_(linear.weight)
         self.to(self.device)
 
     def forward(self, feature_vec):

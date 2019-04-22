@@ -24,7 +24,7 @@ MODEL_PARAMS = (
 
 # dataset, dataloader params
 TRAIN_RATIO = 0.9
-BATCH_SIZE = 1024
+BATCH_SIZE = 512
 NUM_WORKERS = 12
 SR = 22050
 FRAME_SIZE = 2048
@@ -47,7 +47,7 @@ MODEL_NAME = 'scopeMultiDNN'
 SAVE_DIR = './data'
 SAVE_LOG = os.path.join(SAVE_DIR, f'{MODEL_NAME}.log')
 SAVE_DATA = os.path.join(SAVE_DIR, f'{MODEL_NAME}.pkl')
-NUM_EPOCH = 200
+NUM_EPOCH = 100
 MAX_STEP_NUM = int(1e9)
 
 # inference params
