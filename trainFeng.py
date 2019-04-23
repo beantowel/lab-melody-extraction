@@ -12,8 +12,8 @@ from configs.modelFengConfigs import *
 
 def init():
     # prepare dataloader
-    train_set, valid_set = MedleyDB_vocal_Dataset().randomSplit(TRAIN_RATIO)
-    # train_set, valid_set = Adc2004_Dataset().randomSplit(TRAIN_RATIO) # smaller dataset for running test
+    dataset = MedleyDB_vocal_Dataset()
+    train_set, valid_set = dataset.randomSplit(TRAIN_RATIO)
 
     transform = Compose([
         SelectFreqs(SR, HOP_SIZE, FRAME_SIZE),

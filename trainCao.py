@@ -5,15 +5,15 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from modelCao.model import ScopeMultiDNN, MultiTaskLoss
-from utils.dataset import MedleyDB_vocal_Dataset, Adc2004_Dataset, Segments_Dataset
+from utils.dataset import MedleyDB_vocal_Dataset, Adc2004_vocal_Dataset, RWC_PR_Dataset, Segments_Dataset, BaseMelodyDataset
 from utils.preprocessor import Compose, FreqToPitchClass, STFT, SelectFreqs
 from configs.modelCaoConfigs import *
 
 
 def init():
     # prepare dataloader
-    train_set, valid_set = MedleyDB_vocal_Dataset().randomSplit(TRAIN_RATIO)
-    # train_set, valid_set = Adc2004_Dataset().randomSplit(TRAIN_RATIO) # smaller dataset for running test
+    dataset = MedleyDB_vocal_Dataset() + RWC_PR_Dataset()
+    train_set, valid_set = BaseMelodyDataset.randomSplit(dataset, TRAIN_RATIO)
 
     transform = Compose([
         SelectFreqs(SR, HOP_SIZE, FRAME_SIZE),

@@ -10,7 +10,7 @@ from librosa import midi_to_note
 # from modelCao.pitchEstimator import KlapuriEstimator, MelodiaEstimator
 # from modelCao.pitchTracker import GrammarTracker
 
-from utils.dataset import Adc2004_Dataset, MedleyDB_vocal_Dataset, Segments_Dataset
+from utils.dataset import Adc2004_Dataset, MedleyDB_vocal_Dataset, Segments_Dataset, BaseMelodyDataset
 from utils.preprocessor import Compose, FreqToPitchClass, STFT, SelectFreqs
 from modelFeng.model import MultiDNN
 from configs.modelFengConfigs import *
@@ -22,7 +22,7 @@ print(f'resume state from {SAVE_DATA} to {DEVICE}, epoch:{epoch_r}')
 lossFunction = MultiTaskLoss(AUXILIARY_WEIGHT)
 
 # custom valid_loader
-dataset, _ = Adc2004_Dataset().randomSplit(1.0)
+dataset, _ = BaseMelodyDataset.randomSplit(Adc2004_Dataset(), 1 - TRAIN_RATIO)
 transform = Compose([
     SelectFreqs(SR, HOP_SIZE, FRAME_SIZE),
     FreqToPitchClass(NOTE_LOW, NOTE_HIGH, BIN_RESOLUTION),

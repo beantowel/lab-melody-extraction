@@ -73,8 +73,8 @@ class ScopeMultiDNN(nn.Module):
 
         residual = dnnOut.clone()
         transIn = dnnOut.view(-1, self.scope, self.d_hidden[-1])
-        transIn = transIn[:, self.permutation]
-        transOut = self.butterflyTransform(transIn)[:, self.permutation]
+        transIn = transIn
+        transOut = self.butterflyTransform(transIn)
         transOut = transOut.view(-1, self.d_hidden[-1]) + residual
 
         pitchLogit = self.pitchLayer(transOut)

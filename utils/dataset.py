@@ -1,13 +1,10 @@
 import os
-import random
-import collections
 import librosa
 import torch
 import numpy as np
-from copy import deepcopy
-from collections import namedtuple
+from collections import namedtuple, deque
 from itertools import chain
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset, DataLoader, ConcatDataset, Subset
 from mir_eval.io import load_delimited, load_time_series
 
 from configs.configs import DATASET_BASE_DIRS, MEDLEYDB_INIT
@@ -52,15 +49,20 @@ class BaseMelodyDataset(Dataset):
         '''load melody ground truth'''
         raise NotImplementedError
 
-    def randomSplit(self, splitRatio, seed=42):
-        newLen = int(len(self) * splitRatio)
-        random.seed(seed)
-        random.shuffle(self.pathPairs)
-        another = deepcopy(self)
+    def __add__(self, other):
+        x = ConcatDataset([self, other])
+        x.pathPairs = self.pathPairs + other.pathPairs
+        return x
 
-        self.pathPairs = self.pathPairs[:newLen]
-        another.pathPairs = another.pathPairs[newLen:]
-        return self, another
+    def randomSplit(self, splitRatio, seed=42):
+        np.random.seed(seed)
+        indices = np.random.permutation(range(len(self)))
+        newLen = int(len(self) * splitRatio)
+
+        a, b = Subset(self, indices[:newLen]), Subset(self, indices[newLen:])
+        a.pathPairs = [self.pathPairs[i] for i in indices[:newLen]]
+        b.pathPairs = [self.pathPairs[i] for i in indices[newLen:]]
+        return a, b
 
 
 class MedleyDB_Dataset(BaseMelodyDataset):
@@ -242,8 +244,8 @@ class Segments_Dataset(Dataset):
         self.frameCumsum = np.cumsum(nFramesList)
 
         # FIFO cache
-        self._sampleCache = collections.deque(maxlen=cacheSize)
-        self._sampleIdxCache = collections.deque(maxlen=cacheSize)
+        self._sampleCache = deque(maxlen=cacheSize)
+        self._sampleIdxCache = deque(maxlen=cacheSize)
 
     def __len__(self):
         return self.frameCumsum[-1]

@@ -4,11 +4,10 @@ import torch
 # model params
 DIM_FEATURE = 1025
 DIM_HIDDEN = (2048, 2048, 1024)
+NUM_STAGE = 5
 NUM_PITCH = 120  # Pitch
 NUM_VOICE = 2  # Voice or not
 DROPOUT = 0.5
-# scope model params
-NUM_STAGE = 5
 # use gpu
 DEVICE = torch.device('cuda')
 # merge params to list for checkpoint
@@ -26,9 +25,10 @@ MODEL_PARAMS = (
 TRAIN_RATIO = 0.9
 BATCH_SIZE = 512
 NUM_WORKERS = 12
+CACHE_SIZE = 61
 SR = 22050
 FRAME_SIZE = 2048
-HOP_SIZE = 1024
+HOP_SIZE = 512
 SEG_FRAME = (FRAME_SIZE - HOP_SIZE) + HOP_SIZE * (1 << NUM_STAGE)
 SEG_HOP = SEG_FRAME // 4
 N_FFT = 2048
@@ -47,7 +47,7 @@ MODEL_NAME = 'scopeMultiDNN'
 SAVE_DIR = './data'
 SAVE_LOG = os.path.join(SAVE_DIR, f'{MODEL_NAME}.log')
 SAVE_DATA = os.path.join(SAVE_DIR, f'{MODEL_NAME}.pkl')
-NUM_EPOCH = 100
+NUM_EPOCH = 70
 MAX_STEP_NUM = int(1e9)
 
 # inference params
