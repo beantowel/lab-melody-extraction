@@ -46,10 +46,10 @@ class ScopeMultiDNN(nn.Module):
 
         self.butterflyArithm = nn.ModuleList([
             nn.Sequential(
-                nn.Linear(d_hidden[-1] * 2, d_hidden[-1] * 2),
+                nn.Linear(d_feature * 2, d_feature * 2),
                 nn.LeakyReLU(),
                 nn.Dropout(dropout),
-                nn.Linear(d_hidden[-1] * 2, d_hidden[-1] * 2),
+                nn.Linear(d_feature * 2, d_feature * 2),
                 nn.LeakyReLU(),
                 nn.Dropout(dropout),
             )
@@ -67,27 +67,26 @@ class ScopeMultiDNN(nn.Module):
     def forward(self, feature_vec):
         # feature_vec: (nBatch, scope, d_feature)
         assert feature_vec.shape[1] == self.scope, f'{feature_vec.shape} mismatch {self.n_stage}'
+        residual = feature_vec.clone()
+        transIn = feature_vec[:, self.permutation]
+        transOut = self.butterflyTransform(transIn)[:, self.permutation]
+        transOut = transOut * residual
+
         # dnnIn: (nBatch*scope, d_feature)
-        dnnIn = feature_vec.view(-1, self.d_feature)
+        dnnIn = transOut.view(-1, self.d_feature)
         dnnOut = self.dnn(dnnIn)
 
-        residual = dnnOut.clone()
-        transIn = dnnOut.view(-1, self.scope, self.d_hidden[-1])
-        transIn = transIn
-        transOut = self.butterflyTransform(transIn)
-        transOut = transOut.view(-1, self.d_hidden[-1]) + residual
-
-        pitchLogit = self.pitchLayer(transOut)
-        voiceLogit = self.voiceLayer(transOut)
+        pitchLogit = self.pitchLayer(dnnOut)
+        voiceLogit = self.voiceLayer(dnnOut)
         return pitchLogit, voiceLogit
 
     def loadPretrained(self, save_data):
         checkpoint = torch.load(save_data, map_location=self.device)
         model_stat_dict = checkpoint['model']
         self.load_state_dict(model_stat_dict, strict=False)
-        for module in (self.dnn):
-            for param in module.parameters():
-                param.requires_grad = False
+        # for module in (self.dnn):
+        #     for param in module.parameters():
+        #         param.requires_grad = False
 
     def butterflyOp(self, ax, ay, k, i):
         # rootN = 1 << (i+1)
