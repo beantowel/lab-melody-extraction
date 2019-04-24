@@ -12,8 +12,10 @@ from configs.modelCaoConfigs import *
 
 def init():
     # prepare dataloader
-    dataset = MedleyDB_vocal_Dataset()  # + RWC_PR_Dataset()
-    train_set, valid_set = BaseMelodyDataset.randomSplit(dataset, TRAIN_RATIO)
+    # dataset = MedleyDB_vocal_Dataset()  # + RWC_PR_Dataset()
+    # train_set, valid_set = BaseMelodyDataset.randomSplit(dataset, TRAIN_RATIO)
+    train_set = MedleyDB_vocal_Dataset() + RWC_PR_Dataset()
+    valid_set = Adc2004_vocal_Dataset()
 
     transform = Compose([
         SelectFreqs(SR, HOP_SIZE, FRAME_SIZE),

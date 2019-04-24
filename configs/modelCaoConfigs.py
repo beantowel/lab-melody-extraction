@@ -47,7 +47,7 @@ MODEL_NAME = 'scopeMultiDNN'
 SAVE_DIR = './data'
 SAVE_LOG = os.path.join(SAVE_DIR, f'{MODEL_NAME}.log')
 SAVE_DATA = os.path.join(SAVE_DIR, f'{MODEL_NAME}.pkl')
-NUM_EPOCH = 70
+NUM_EPOCH = 100
 MAX_STEP_NUM = int(1e9)
 
 # inference params
