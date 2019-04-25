@@ -36,3 +36,4 @@ venv
 __pycache__
 .vscode
 data/remoteCp
+data/*.pkl

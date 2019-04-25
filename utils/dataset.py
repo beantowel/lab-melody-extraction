@@ -218,7 +218,7 @@ class Segments_Dataset(Dataset):
     '''make a equal-length segmented wav dataset from an existed dataset,
     sequential queries will be much faster with sample cache'''
 
-    def __init__(self, dataset, sr=22050, frameSize=2048, hopSize=512, transform=None, cacheSize=1):
+    def __init__(self, dataset, sr=22050, frameSize=2048, hopSize=512, transform=None, cacheSize=4):
         self.dataset = dataset
         self.sr = sr
         self.frameSize = frameSize

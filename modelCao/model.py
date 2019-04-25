@@ -118,7 +118,8 @@ def MultiTaskLoss(auxiliary_weight=0.5):
         voiceLabel = (label > 0).to(torch.long)
 
         pitchLoss = F.cross_entropy(pitchLogit, label, ignore_index=-1)
-        voiceLoss = F.cross_entropy(voiceLogit, voiceLabel)
-        loss = pitchLoss + auxiliary_weight * voiceLoss
+        # voiceLoss = F.cross_entropy(voiceLogit, voiceLabel)
+        # loss = pitchLoss + auxiliary_weight * voiceLoss
+        loss = pitchLoss
         return loss
     return lossFunction
