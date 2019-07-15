@@ -35,3 +35,6 @@ venv
 # ignore
 __pycache__
 .vscode
+data/remoteCp
+data/*.pkl
+scripts/experimental
