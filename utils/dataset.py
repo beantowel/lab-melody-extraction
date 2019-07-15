@@ -289,8 +289,10 @@ class IKala_Dataset(BaseMelodyDataset):
             self.pathPairs.append(MelDataPathPair(title, wavPath, GTPath))
 
     def loadGT(self, GTPath):
-        freqs = load_delimited(GTPath, [float])
-        gt = np.arange(0.5, len(freqs)) / 31.25, np.array(freqs)
+        midis = np.array(load_delimited(GTPath, [float]))
+        freqs = librosa.midi_to_hz(midis)
+        freqs[midis <= 0] = 0
+        gt = np.arange(0.5, len(freqs)) / 31.25, freqs
         return gt
 
 class Segments_Dataset(Dataset):

@@ -25,6 +25,10 @@ snippets for [MIREX AME task](https://www.music-ir.org/mirex/wiki/2018:Audio_Mel
 - Mirex-05 (vocal/instrumental)
 - iKala
 
+## Requirements
+
+Except for the requirements needed by the algorithms repos above, the code use Python 3.6 or higher version, and requirements is listed in `requirements.txt`. You could install the requirements with command `pip install -r requirements.txt`.
+
 ## Configuration
 
 Since this repo does not include any dataset files and algorithms repos, you should have download them independently and configure the path to the datasets and algorithms in the `configs/configs.py`.
